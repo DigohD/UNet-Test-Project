@@ -20,19 +20,21 @@ public class PlayerControl : NetworkBehaviour {
 	void FixedUpdate(){
 		//updatePositions();
 
-		if(!isLocalPlayer)
-			return;
 
-		Cmd_Move(Input.GetButtonDown("Left"), Input.GetButtonDown("Right"), Input.GetButtonDown("Jump"));
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		updateOtherClients();
+
+		if(!isLocalPlayer)
+			return;
+		
+		Cmd_Move(Input.GetButtonDown("Left"), Input.GetButtonDown("Right"), Input.GetButtonDown("Jump"));
 	}
 
 	void updateOtherClients(){
-		if(!isLocalPlayer)
+		if(!isServer)
 			transform.position = Vector3.Lerp(transform.position, syncPos, Time.deltaTime * lerpRate);
 	}
 
