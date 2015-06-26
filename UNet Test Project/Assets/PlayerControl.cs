@@ -44,11 +44,11 @@ public class PlayerControl : NetworkBehaviour {
 		//transform.position = syncPos;
 
 		if (isLeft){
-			GetComponent<Rigidbody>().AddForce(new Vector3(100, 0, 0));
+			GetComponent<Rigidbody>().AddForce(new Vector3(-100, 0, 0));
 		}
 		
 		if (isRight){
-			GetComponent<Rigidbody>().AddForce(new Vector3(-100, 0, 0));
+			GetComponent<Rigidbody>().AddForce(new Vector3(100, 0, 0));
 		}
 		
 		if (isJump){
