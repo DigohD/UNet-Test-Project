@@ -17,6 +17,10 @@ public class PlayerControl : NetworkBehaviour {
 			GetComponent<Rigidbody>().useGravity = false;
 	}
 
+	public override float GetNetworkSendInterval(){
+		return 0.03f;
+	}
+
 	void FixedUpdate(){
 		//updatePositions();
 
