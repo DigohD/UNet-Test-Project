@@ -18,45 +18,52 @@ public class PlayerControl : NetworkBehaviour {
 	}
 
 	void FixedUpdate(){
-		updatePositions();
-		updateOtherClients();
+		//updatePositions();
 
 		if(!isLocalPlayer)
 			return;
-		
-		if (Input.GetButtonDown("Left")){
-			GetComponent<Rigidbody>().AddForce(new Vector3(100, 0, 0));
-		}
-		
-		if (Input.GetButtonDown("Right")){
-			GetComponent<Rigidbody>().AddForce(new Vector3(-100, 0, 0));
-		}
-		
-		if (Input.GetButtonDown("Jump")){
-			GetComponent<Rigidbody>().AddForce(new Vector3(0, 400, 0));
-		}
+
+		Cmd_Move(Input.GetButtonDown("Left"), Input.GetButtonDown("Right"), Input.GetButtonDown("Jump"));
 	}
 	
 	// Update is called once per frame
 	void Update () {
-
+		updateOtherClients();
 	}
 
 	void updateOtherClients(){
 		if(!isLocalPlayer)
 			transform.position = Vector3.Lerp(transform.position, syncPos, Time.deltaTime * lerpRate);
-
-
 	}
 
 	[Command]
+	public void Cmd_Move(bool isLeft, bool isRight, bool isJump){
+		//syncPos = newPos;
+		//transform.position = syncPos;
+
+		if (isLeft){
+			GetComponent<Rigidbody>().AddForce(new Vector3(100, 0, 0));
+		}
+		
+		if (isRight){
+			GetComponent<Rigidbody>().AddForce(new Vector3(-100, 0, 0));
+		}
+		
+		if (isJump){
+			GetComponent<Rigidbody>().AddForce(new Vector3(0, 400, 0));
+		}
+
+		syncPos = transform.position;
+	}
+
+	/*[Command]
 	public void Cmd_Move(Vector3 newPos){
 		syncPos = newPos;
 		transform.position = syncPos;
-	}
+	}*/
 
 	[ClientCallback]
 	void updatePositions(){
-		Cmd_Move(transform.position);
+
 	}
 }
