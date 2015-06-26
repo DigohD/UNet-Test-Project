@@ -26,15 +26,37 @@ public class PlayerControl : NetworkBehaviour {
 
 
 	}
-	
+
+	bool localIsLeft, localIsRight, localIsJump;
+
 	// Update is called once per frame
 	void Update () {
 		updateOtherClients();
 
 		if(!isLocalPlayer)
 			return;
-		
-		Cmd_Move(Input.GetButtonDown("Left"), Input.GetButtonDown("Right"), Input.GetButtonDown("Jump"));
+
+		if (Input.GetButtonDown("Left")){
+			localIsLeft = true;
+		}
+		if (Input.GetButtonDown("Right")){
+			localIsRight = true;
+		}
+		if (Input.GetButtonDown("Jump")){
+			localIsJump = true;
+		}
+
+		if (Input.GetButtonUp("Left")){
+			localIsLeft = false;
+		}
+		if (Input.GetButtonUp("Right")){
+			localIsRight = false;
+		}
+		if (Input.GetButtonUp("Jump")){
+			localIsJump = false;
+		}
+
+		Cmd_Move(localIsLeft, localIsRight, localIsJump);
 	}
 
 	void updateOtherClients(){
@@ -48,15 +70,15 @@ public class PlayerControl : NetworkBehaviour {
 		//transform.position = syncPos;
 
 		if (isLeft){
-			GetComponent<Rigidbody>().AddForce(new Vector3(-100, 0, 0));
+			GetComponent<Rigidbody>().AddForce(new Vector3(-30, 0, 0));
 		}
 		
 		if (isRight){
-			GetComponent<Rigidbody>().AddForce(new Vector3(100, 0, 0));
+			GetComponent<Rigidbody>().AddForce(new Vector3(30, 0, 0));
 		}
 		
 		if (isJump){
-			GetComponent<Rigidbody>().AddForce(new Vector3(0, 400, 0));
+			GetComponent<Rigidbody>().AddForce(new Vector3(0, 40, 0));
 		}
 
 		syncPos = transform.position;
