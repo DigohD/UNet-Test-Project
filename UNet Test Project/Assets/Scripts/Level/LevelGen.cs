@@ -20,11 +20,8 @@ public class LevelGen : NetworkBehaviour {
 	void FixedUpdate () {
 		timer++;
 
-		if (!isServer) {
-			Debug.Log(isServer);
+		if (!isServer) 
 			return;
-		}
-			
 
 		if (timer % 90 == 0) {
 			GameObject go = (GameObject)Instantiate(platforms[Random.Range(0, platforms.Length - 1)], 
