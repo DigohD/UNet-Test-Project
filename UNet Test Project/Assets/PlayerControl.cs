@@ -12,6 +12,9 @@ public class PlayerControl : NetworkBehaviour {
 	// Use this for initialization
 	void Start () {
 		syncPos = transform.position;
+
+		if(!isServer)
+			GetComponent<Rigidbody>().useGravity = false;
 	}
 
 	void FixedUpdate(){
