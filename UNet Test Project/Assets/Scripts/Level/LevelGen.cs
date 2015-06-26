@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class LevelGen : MonoBehaviour {
+public class LevelGen : NetworkBehaviour {
 
 	public GameObject startingPlatform;
 	public GameObject[] platforms;
@@ -17,9 +18,12 @@ public class LevelGen : MonoBehaviour {
 	void FixedUpdate () {
 		timer++;
 
+		if (!isServer)
+			return;
 		if (timer % 90 == 0) {
-			Instantiate(platforms[Random.Range(0, platforms.Length - 1)], 
+			GameObject go = (GameObject)Instantiate(platforms[Random.Range(0, platforms.Length - 1)], 
 			            new Vector3(20, Random.Range(-2, 5), 0), Quaternion.identity);
+			NetworkServer.Spawn(go);
 		}
 	}
 }
