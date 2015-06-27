@@ -36,6 +36,7 @@ public class SwooshScript : MonoBehaviour {
 			isFired = true;
 			timer = executeTime;
 			GetComponentInChildren<ParticleSystem>().Play();
+			GetComponentInChildren<AudioSource>().Play();
 		}
 
 		if(isFired){
