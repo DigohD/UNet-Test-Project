@@ -32,7 +32,7 @@ public class SwooshScript : MonoBehaviour {
 	bool isFired = false;
 
 	public void fire(){
-		if(!isFired && Input.GetMouseButtonDown(0)){
+		if(!isFired && Input.GetMouseButton(0)){
 			isFired = true;
 			timer = executeTime;
 			GetComponentInChildren<ParticleSystem>().Play();
