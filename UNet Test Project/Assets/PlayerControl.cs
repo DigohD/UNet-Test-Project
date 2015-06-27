@@ -7,6 +7,9 @@ public class PlayerControl : NetworkBehaviour {
 	[SyncVar]
 	Vector3 syncPos;
 
+	bool isJumping = false;
+	float jumpDelay = 1f, jumpTimer = 0;
+
 	float lerpRate = 15;
 
 	// Use this for initialization
@@ -70,15 +73,26 @@ public class PlayerControl : NetworkBehaviour {
 		//transform.position = syncPos;
 
 		if (isLeft){
-			GetComponent<Rigidbody>().AddForce(new Vector3(-30, 0, 0));
+			if(!(GetComponent<Rigidbody>().velocity.x < -3))
+				GetComponent<Rigidbody>().AddForce(new Vector3(-30, 0, 0));
 		}
 		
 		if (isRight){
-			GetComponent<Rigidbody>().AddForce(new Vector3(30, 0, 0));
+			if(!(GetComponent<Rigidbody>().velocity.x > 3))
+				GetComponent<Rigidbody>().AddForce(new Vector3(30, 0, 0));
 		}
 		
-		if (isJump){
-			GetComponent<Rigidbody>().AddForce(new Vector3(0, 40, 0));
+		if (isJump && !isJumping){
+			GetComponent<Rigidbody>().AddForce(new Vector3(0, 400, 0));
+			isJumping = true;
+			jumpTimer = jumpDelay;
+			GetComponentInChildren<ParticleSystem>().Play();
+		}else if(isJumping){
+			jumpTimer -= Time.deltaTime;
+			if(jumpTimer <= 0){
+				isJumping = false;
+				jumpTimer = 0;
+			}
 		}
 
 		syncPos = transform.position;
