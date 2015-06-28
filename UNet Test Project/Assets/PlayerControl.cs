@@ -7,14 +7,20 @@ public class PlayerControl : NetworkBehaviour {
 	[SyncVar]
 	Vector3 syncPos;
 
+	ActionScript mainAction, secondaryAction;
+	Vector3 mousePosition;
+
 	bool isJumping = false;
 	float jumpDelay = 1f, jumpTimer = 0;
+	float inputSyncDelay = 0.03f, inputSyncTimer;
 
-	float lerpRate = 15;
+	float lerpRate = 20;
 
-	// Use this for initialization
 	void Start () {
 		syncPos = transform.position;
+		inputSyncTimer = inputSyncDelay;
+
+		mainAction = GetComponentInChildren<ActionScript>();
 
 		if(!isServer)
 			GetComponent<Rigidbody>().useGravity = false;
@@ -25,20 +31,17 @@ public class PlayerControl : NetworkBehaviour {
 	}
 
 	void FixedUpdate(){
-		//updatePositions();
-
 
 	}
 
 	bool localIsLeft, localIsRight, localIsJump;
 
-	// Update is called once per frame
 	void Update () {
 		updateOtherClients();
 
 		if(!isLocalPlayer)
 			return;
-
+		
 		if (Input.GetButtonDown("Left")){
 			localIsLeft = true;
 		}
@@ -48,7 +51,7 @@ public class PlayerControl : NetworkBehaviour {
 		if (Input.GetButtonDown("Jump")){
 			localIsJump = true;
 		}
-
+		
 		if (Input.GetButtonUp("Left")){
 			localIsLeft = false;
 		}
@@ -59,7 +62,14 @@ public class PlayerControl : NetworkBehaviour {
 			localIsJump = false;
 		}
 
-		Cmd_Move(localIsLeft, localIsRight, localIsJump);
+		mousePosition = Input.mousePosition;
+		
+		inputSyncTimer -= Time.deltaTime;
+		if(inputSyncTimer <= 0){
+			inputSyncTimer += inputSyncDelay;
+			Cmd_Move(localIsLeft, localIsRight, localIsJump);
+			Cmd_MouseEvents(Input.GetMouseButton(0), Input.GetMouseButton(1), Input.GetMouseButton(2), mousePosition);
+		}
 	}
 
 	void updateOtherClients(){
@@ -68,10 +78,16 @@ public class PlayerControl : NetworkBehaviour {
 	}
 
 	[Command]
-	public void Cmd_Move(bool isLeft, bool isRight, bool isJump){
-		//syncPos = newPos;
-		//transform.position = syncPos;
+	public void Cmd_MouseEvents(bool leftDown, bool rightDown, bool middleDown, Vector3 mousePos){
 
+		if(mainAction != null)
+			mainAction.run(leftDown, mousePos);
+		if(secondaryAction != null)
+			secondaryAction.run(rightDown, mousePos);
+	}
+
+	[Command]
+	public void Cmd_Move(bool isLeft, bool isRight, bool isJump){
 		if (isLeft){
 			if(!(GetComponent<Rigidbody>().velocity.x < -3))
 				GetComponent<Rigidbody>().AddForce(new Vector3(-30, 0, 0));
@@ -88,7 +104,7 @@ public class PlayerControl : NetworkBehaviour {
 			jumpTimer = jumpDelay;
 			GetComponentInChildren<ParticleSystem>().Play();
 		}else if(isJumping){
-			jumpTimer -= Time.deltaTime;
+			jumpTimer -= inputSyncDelay;
 			if(jumpTimer <= 0){
 				isJumping = false;
 				jumpTimer = 0;
@@ -96,16 +112,5 @@ public class PlayerControl : NetworkBehaviour {
 		}
 
 		syncPos = transform.position;
-	}
-
-	/*[Command]
-	public void Cmd_Move(Vector3 newPos){
-		syncPos = newPos;
-		transform.position = syncPos;
-	}*/
-
-	[ClientCallback]
-	void updatePositions(){
-
 	}
 }
